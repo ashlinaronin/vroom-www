@@ -16,5 +16,54 @@
     <main>
       <h1>vroom</h1>
     </main>
+
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/startaudiocontext@1.2.1/StartAudioContext.min.js"
+    ></script>
+    <script type="module">
+      await StartAudioContext(Tone.context);
+
+      const playToyBoatEngine = () => {
+        const noise = new Tone.Noise("white").start();
+        const bpFilter = new Tone.Filter({
+          frequency: 9,
+          q: 15,
+          type: "bandpass",
+        });
+        const mult = new Tone.Multiply(600);
+        noise.connect(bpFilter);
+        bpFilter.connect(mult);
+
+        // not sure if this does the same thing as clip~
+        const scale = new Tone.Scale(0, 1);
+        const hpFilter = new Tone.Filter({
+          frequency: 10,
+          type: "highpass",
+        });
+        const lpFilter = new Tone.Filter({
+          frequency: 30,
+          type: "lowpass",
+        });
+        const hp100Filter = new Tone.Filter({
+          frequency: 100,
+          type: "highpass",
+        });
+        const multBy2 = new Tone.Multiply(2);
+
+        mult.connect(scale);
+        scale.connect(hpFilter);
+        hpFilter.connect(lpFilter);
+        lpFilter.connect(hp100Filter);
+        lpFilter.connect(multBy2);
+        multBy2.toDestination();
+      };
+
+      await playToyBoatEngine();
+    </script>
   </body>
 </html>
